@@ -4,8 +4,7 @@ import "gorm.io/gorm"
 
 type Dorayaki struct {
 	gorm.Model
-	Rasa      string `json:"rasa"`
-	Deskripsi string `json:"deskripsi"`
-	Gambar    string `json:"gambar"`
-	TokoID    uint
+	Rasa      string `gorm:"type:varchar(255)" json:"rasa"`
+	Deskripsi string `gorm:"type:varchar(255)" json:"deskripsi"`
+	Gambar    string `gorm:"type:varchar(255)" json:"gambar"`
 }

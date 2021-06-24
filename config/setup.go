@@ -29,7 +29,13 @@ func ConnectDatabase() *gorm.DB {
 		panic("Failed to connect to database!")
 	}
 
-	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&models.Toko{}, &models.Dorayaki{})
+	errJoinTable := db.SetupJoinTable(&models.Shop{}, "Dorayakis", &models.ShopDorayaki{})
+
+	if errJoinTable != nil {
+		panic("Failed to create join table")
+	}
+
+	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&models.Shop{}, &models.Dorayaki{})
 
 	return db
 }
