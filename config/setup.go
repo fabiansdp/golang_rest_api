@@ -10,7 +10,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func ConnectDatabase() *gorm.DB {
+var DB *gorm.DB
+
+func ConnectDatabase() {
 	errEnv := godotenv.Load()
 
 	if errEnv != nil {
@@ -37,5 +39,5 @@ func ConnectDatabase() *gorm.DB {
 
 	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&models.Shop{}, &models.Dorayaki{})
 
-	return db
+	DB = db
 }
