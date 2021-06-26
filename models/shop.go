@@ -8,5 +8,5 @@ type Shop struct {
 	Jalan     string     `gorm:"type:varchar(255)" json:"jalan"`
 	Kecamatan string     `gorm:"type:varchar(255)" json:"kecamatan"`
 	Provinsi  string     `gorm:"type:varchar(255)" json:"provinsi"`
-	Dorayakis []Dorayaki `gorm:"many2many:shop_dorayakis"`
+	Dorayakis []Dorayaki `gorm:"many2many:shop_dorayakis" json:"inventory"`
 }

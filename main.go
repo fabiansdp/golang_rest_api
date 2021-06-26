@@ -21,6 +21,13 @@ func main() {
 	router.GET("/dorayakis/:id", controllers.GetDorayaki)
 	router.POST("/dorayakis", controllers.CreateDorayaki)
 	router.PATCH("/dorayakis/:id", controllers.UpdateDorayaki)
+	router.DELETE("/dorayakis/:id", controllers.DeleteDorayaki)
 
-	router.Run()
+	router.GET("/shops", controllers.GetShops)
+	router.GET("/shops/:id", controllers.GetShop)
+	router.POST("/shops", controllers.CreateShop)
+	router.PATCH("/shops/:id", controllers.UpdateShop)
+	router.DELETE("/shops/:id", controllers.DeleteShop)
+
+	router.Run(":8080")
 }

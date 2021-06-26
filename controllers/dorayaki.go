@@ -77,3 +77,18 @@ func UpdateDorayaki(c *gin.Context) {
 	config.DB.Model(&dorayaki).Updates(models.Dorayaki{Rasa: input.Rasa, Deskripsi: input.Deskripsi, Gambar: input.Gambar})
 	c.JSON(http.StatusOK, gin.H{"data": dorayaki})
 }
+
+// DELETE Request
+// Delete a dorayaki
+func DeleteDorayaki(c *gin.Context) {
+	var dorayaki models.Dorayaki
+
+	if err := config.DB.First(&dorayaki, c.Param("id")).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
+
+	config.DB.Delete(&dorayaki)
+
+	c.JSON(http.StatusOK, gin.H{"data": true})
+}
