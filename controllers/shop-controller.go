@@ -5,6 +5,7 @@ import (
 
 	"github.com/fabiansdp/golang_rest_api/config"
 	"github.com/fabiansdp/golang_rest_api/dto"
+	"github.com/fabiansdp/golang_rest_api/helper"
 	"github.com/fabiansdp/golang_rest_api/models"
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +17,9 @@ func GetShops(c *gin.Context) {
 
 	config.DB.Find(&shops)
 
-	c.JSON(http.StatusOK, gin.H{"data": shops})
+	res := helper.BuildResponse(true, "OK", shops)
+
+	c.JSON(http.StatusOK, res)
 }
 
 // GET Request
@@ -27,11 +30,14 @@ func GetShop(c *gin.Context) {
 	err := config.DB.Preload("Dorayakis").First(&shop, c.Param("id")).Error
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": shop})
+	res := helper.BuildResponse(true, "OK", shop)
+
+	c.JSON(http.StatusOK, res)
 }
 
 // POST Request
@@ -39,9 +45,10 @@ func GetShop(c *gin.Context) {
 func CreateShop(c *gin.Context) {
 	var input dto.CreateShopInput
 
-	err := c.ShouldBindJSON(&input)
+	err := c.ShouldBind(&input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		res := helper.BuildErrorResponse("Create shop failed", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
@@ -54,7 +61,9 @@ func CreateShop(c *gin.Context) {
 
 	config.DB.Create(&shop)
 
-	c.JSON(http.StatusOK, gin.H{"data": shop})
+	res := helper.BuildResponse(true, "OK", shop)
+
+	c.JSON(http.StatusOK, res)
 }
 
 // POST Request
@@ -63,6 +72,7 @@ func AddDorayaki(c *gin.Context) {
 	var input dto.AddDorayakiInput
 
 	err := c.ShouldBindJSON(&input)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -77,13 +87,15 @@ func UpdateShop(c *gin.Context) {
 	var shop models.Shop
 
 	if err := config.DB.First(&shop, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
 	var input dto.UpdateShopInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		res := helper.BuildErrorResponse("Not JSON binded", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
@@ -94,7 +106,8 @@ func UpdateShop(c *gin.Context) {
 		Provinsi:  input.Provinsi,
 	})
 
-	c.JSON(http.StatusOK, gin.H{"data": shop})
+	res := helper.BuildResponse(true, "OK", shop)
+	c.JSON(http.StatusOK, res)
 }
 
 // DELETE Request
@@ -103,11 +116,13 @@ func DeleteShop(c *gin.Context) {
 	var shop models.Shop
 
 	if err := config.DB.First(&shop, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
 	config.DB.Delete(&shop)
 
-	c.JSON(http.StatusOK, gin.H{"data": true})
+	res := helper.BuildResponse(true, "Deleted", helper.EmptyObj{})
+	c.JSON(http.StatusOK, res)
 }

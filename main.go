@@ -17,17 +17,23 @@ func main() {
 		})
 	})
 
-	router.GET("/dorayakis", controllers.GetDorayakis)
-	router.GET("/dorayakis/:id", controllers.GetDorayaki)
-	router.POST("/dorayakis", controllers.CreateDorayaki)
-	router.PATCH("/dorayakis/:id", controllers.UpdateDorayaki)
-	router.DELETE("/dorayakis/:id", controllers.DeleteDorayaki)
+	dorayakiRoutes := router.Group("api/dorayakis")
+	{
+		dorayakiRoutes.GET("/", controllers.GetDorayakis)
+		dorayakiRoutes.GET("/:id", controllers.GetDorayaki)
+		dorayakiRoutes.POST("/", controllers.CreateDorayaki)
+		dorayakiRoutes.PATCH("/:id", controllers.UpdateDorayaki)
+		dorayakiRoutes.DELETE("/:id", controllers.DeleteDorayaki)
+	}
 
-	router.GET("/shops", controllers.GetShops)
-	router.GET("/shops/:id", controllers.GetShop)
-	router.POST("/shops", controllers.CreateShop)
-	router.PATCH("/shops/:id", controllers.UpdateShop)
-	router.DELETE("/shops/:id", controllers.DeleteShop)
+	shopRoutes := router.Group("api/shops")
+	{
+		shopRoutes.GET("/", controllers.GetShops)
+		shopRoutes.GET("/:id", controllers.GetShop)
+		shopRoutes.POST("/", controllers.CreateShop)
+		shopRoutes.PATCH("/:id", controllers.UpdateShop)
+		shopRoutes.DELETE("/:id", controllers.DeleteShop)
+	}
 
 	router.Run(":8080")
 }

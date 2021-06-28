@@ -5,6 +5,7 @@ import (
 
 	"github.com/fabiansdp/golang_rest_api/config"
 	"github.com/fabiansdp/golang_rest_api/dto"
+	"github.com/fabiansdp/golang_rest_api/helper"
 	"github.com/fabiansdp/golang_rest_api/models"
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +17,9 @@ func GetDorayakis(c *gin.Context) {
 
 	config.DB.Find(&dorayakis)
 
-	c.JSON(http.StatusOK, gin.H{"data": dorayakis})
+	res := helper.BuildResponse(true, "OK", dorayakis)
+
+	c.JSON(http.StatusOK, res)
 }
 
 // GET Request
@@ -25,26 +28,34 @@ func GetDorayaki(c *gin.Context) {
 	var dorayaki models.Dorayaki
 
 	if err := config.DB.First(&dorayaki, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": dorayaki})
+	res := helper.BuildResponse(true, "OK", dorayaki)
+
+	c.JSON(http.StatusOK, res)
 }
 
 // POST Request
 // Create New Dorayaki
 func CreateDorayaki(c *gin.Context) {
 	var input dto.CreateDorayakiInput
+
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		res := helper.BuildErrorResponse("Create dorayaki failed", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
 	dorayaki := models.Dorayaki{Rasa: input.Rasa, Deskripsi: input.Deskripsi, Gambar: input.Gambar}
+
 	config.DB.Create(&dorayaki)
 
-	c.JSON(http.StatusOK, gin.H{"data": dorayaki})
+	res := helper.BuildResponse(true, "OK", dorayaki)
+
+	c.JSON(http.StatusOK, res)
 }
 
 // PATCH Request
@@ -53,18 +64,22 @@ func UpdateDorayaki(c *gin.Context) {
 	var dorayaki models.Dorayaki
 
 	if err := config.DB.First(&dorayaki, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
 	var input dto.UpdateDorayakiInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		res := helper.BuildErrorResponse("Not JSON binded", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
 	config.DB.Model(&dorayaki).Updates(models.Dorayaki{Rasa: input.Rasa, Deskripsi: input.Deskripsi, Gambar: input.Gambar})
-	c.JSON(http.StatusOK, gin.H{"data": dorayaki})
+
+	res := helper.BuildResponse(true, "OK", dorayaki)
+	c.JSON(http.StatusOK, res)
 }
 
 // DELETE Request
@@ -73,11 +88,13 @@ func DeleteDorayaki(c *gin.Context) {
 	var dorayaki models.Dorayaki
 
 	if err := config.DB.First(&dorayaki, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
 	config.DB.Delete(&dorayaki)
 
-	c.JSON(http.StatusOK, gin.H{"data": true})
+	res := helper.BuildResponse(true, "Deleted", helper.EmptyObj{})
+	c.JSON(http.StatusOK, res)
 }
