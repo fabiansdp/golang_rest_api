@@ -26,8 +26,10 @@ func GetShops(c *gin.Context) {
 // Find a single shop and its inventory
 func GetShop(c *gin.Context) {
 	var shop models.Shop
+	var inventory []dto.Inventory
+	var output dto.GetShopOutput
 
-	err := config.DB.Preload("Dorayakis").First(&shop, c.Param("id")).Error
+	err := config.DB.First(&shop, c.Param("id")).Error
 
 	if err != nil {
 		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
@@ -35,7 +37,18 @@ func GetShop(c *gin.Context) {
 		return
 	}
 
-	res := helper.BuildResponse(true, "OK", shop)
+	// Join Operation
+	config.DB.Table("dorayakis").Select(
+		"dorayakis.id",
+		"dorayakis.rasa",
+		"dorayakis.deskripsi",
+		"dorayakis.gambar",
+		"shop_dorayakis.quantity").Joins("JOIN shop_dorayakis ON dorayakis.id = shop_dorayakis.dorayaki_id").Where("shop_dorayakis.shop_id = ?", c.Param("id")).Scan(&inventory)
+
+	output.ShopInfo = shop
+	output.Inventory = inventory
+
+	res := helper.BuildResponse(true, "OK", output)
 
 	c.JSON(http.StatusOK, res)
 }
@@ -45,7 +58,7 @@ func GetShop(c *gin.Context) {
 func CreateShop(c *gin.Context) {
 	var input dto.CreateShopInput
 
-	err := c.ShouldBind(&input)
+	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		res := helper.BuildErrorResponse("Create shop failed", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, res)
@@ -74,11 +87,22 @@ func AddDorayaki(c *gin.Context) {
 	err := c.ShouldBindJSON(&input)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		res := helper.BuildErrorResponse("Create shop failed", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": true})
+	shop_dorayaki := models.ShopDorayaki{
+		DorayakiID: input.DorayakiID,
+		ShopID:     input.ShopID,
+		Quantity:   input.Quantity,
+	}
+
+	config.DB.Create(&shop_dorayaki)
+
+	res := helper.BuildResponse(true, "OK", shop_dorayaki)
+
+	c.JSON(http.StatusOK, res)
 }
 
 // PATCH Request

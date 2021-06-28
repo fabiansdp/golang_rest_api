@@ -1,5 +1,7 @@
 package dto
 
+import "github.com/fabiansdp/golang_rest_api/models"
+
 type CreateShopInput struct {
 	Nama      string `json:"nama" binding:"required"`
 	Jalan     string `json:"jalan" binding:"required"`
@@ -15,7 +17,17 @@ type UpdateShopInput struct {
 }
 
 type AddDorayakiInput struct {
-	DorayakiID string `json:"dorayaki_id" binding:"required"`
-	ShopID     string `json:"shop_id" binding:"required"`
-	Quantity   int    `json:"quantity" binding:"required"`
+	DorayakiID uint `json:"dorayaki_id" binding:"required"`
+	ShopID     uint `json:"shop_id" binding:"required"`
+	Quantity   int  `json:"quantity" binding:"required"`
+}
+
+type Inventory struct {
+	models.Dorayaki
+	Quantity int `json:"quantity"`
+}
+
+type GetShopOutput struct {
+	ShopInfo  models.Shop `json:"shop_info"`
+	Inventory []Inventory `json:"inventory"`
 }

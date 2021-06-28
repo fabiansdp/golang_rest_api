@@ -31,6 +31,7 @@ func main() {
 		shopRoutes.GET("/", controllers.GetShops)
 		shopRoutes.GET("/:id", controllers.GetShop)
 		shopRoutes.POST("/", controllers.CreateShop)
+		shopRoutes.POST("/inventory", controllers.AddDorayaki)
 		shopRoutes.PATCH("/:id", controllers.UpdateShop)
 		shopRoutes.DELETE("/:id", controllers.DeleteShop)
 	}
