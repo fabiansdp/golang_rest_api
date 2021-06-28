@@ -4,21 +4,10 @@ import (
 	"net/http"
 
 	"github.com/fabiansdp/golang_rest_api/config"
+	"github.com/fabiansdp/golang_rest_api/dto"
 	"github.com/fabiansdp/golang_rest_api/models"
 	"github.com/gin-gonic/gin"
 )
-
-type CreateDorayakiInput struct {
-	Rasa      string `json:"rasa" binding:"required"`
-	Deskripsi string `json:"deskripsi" binding:"required"`
-	Gambar    string `json:"gambar" binding:"required"`
-}
-
-type UpdateDorayakiInput struct {
-	Rasa      string `json:"rasa"`
-	Deskripsi string `json:"deskripsi"`
-	Gambar    string `json:"gambar"`
-}
 
 // GET Request
 // Find all dorayakis
@@ -46,7 +35,7 @@ func GetDorayaki(c *gin.Context) {
 // POST Request
 // Create New Dorayaki
 func CreateDorayaki(c *gin.Context) {
-	var input CreateDorayakiInput
+	var input dto.CreateDorayakiInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -68,7 +57,7 @@ func UpdateDorayaki(c *gin.Context) {
 		return
 	}
 
-	var input UpdateDorayakiInput
+	var input dto.UpdateDorayakiInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

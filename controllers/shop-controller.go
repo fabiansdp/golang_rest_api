@@ -4,29 +4,10 @@ import (
 	"net/http"
 
 	"github.com/fabiansdp/golang_rest_api/config"
+	"github.com/fabiansdp/golang_rest_api/dto"
 	"github.com/fabiansdp/golang_rest_api/models"
 	"github.com/gin-gonic/gin"
 )
-
-type CreateShopInput struct {
-	Nama      string `json:"nama" binding:"required"`
-	Jalan     string `json:"jalan" binding:"required"`
-	Kecamatan string `json:"kecamatan" binding:"required"`
-	Provinsi  string `json:"provinsi" binding:"required"`
-}
-
-type UpdateShopInput struct {
-	Nama      string `json:"nama"`
-	Jalan     string `json:"jalan"`
-	Kecamatan string `json:"kecamatan"`
-	Provinsi  string `json:"provinsi"`
-}
-
-type AddDorayakiInput struct {
-	DorayakiID string `json:"dorayaki_id" binding:"required"`
-	ShopID     string `json:"shop_id" binding:"required"`
-	Quantity   int    `json:"quantity" binding:"required"`
-}
 
 // GET Request
 // Find all shops
@@ -39,7 +20,7 @@ func GetShops(c *gin.Context) {
 }
 
 // GET Request
-// Find a single shop
+// Find a single shop and its inventory
 func GetShop(c *gin.Context) {
 	var shop models.Shop
 
@@ -56,7 +37,7 @@ func GetShop(c *gin.Context) {
 // POST Request
 // Create a shop
 func CreateShop(c *gin.Context) {
-	var input CreateShopInput
+	var input dto.CreateShopInput
 
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -79,7 +60,7 @@ func CreateShop(c *gin.Context) {
 // POST Request
 // Add dorayaki to shop
 func AddDorayaki(c *gin.Context) {
-	var input AddDorayakiInput
+	var input dto.AddDorayakiInput
 
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -100,7 +81,7 @@ func UpdateShop(c *gin.Context) {
 		return
 	}
 
-	var input UpdateShopInput
+	var input dto.UpdateShopInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
