@@ -22,6 +22,12 @@ type UpdateShopInput struct {
 	Provinsi  string `json:"provinsi"`
 }
 
+type AddDorayakiInput struct {
+	DorayakiID string `json:"dorayaki_id" binding:"required"`
+	ShopID     string `json:"shop_id" binding:"required"`
+	Quantity   int    `json:"quantity" binding:"required"`
+}
+
 // GET Request
 // Find all shops
 func GetShops(c *gin.Context) {
@@ -37,7 +43,9 @@ func GetShops(c *gin.Context) {
 func GetShop(c *gin.Context) {
 	var shop models.Shop
 
-	if err := config.DB.First(&shop, c.Param("id")).Error; err != nil {
+	err := config.DB.Preload("Dorayakis").First(&shop, c.Param("id")).Error
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
 		return
 	}
@@ -49,7 +57,9 @@ func GetShop(c *gin.Context) {
 // Create a shop
 func CreateShop(c *gin.Context) {
 	var input CreateShopInput
-	if err := c.ShouldBindJSON(&input); err != nil {
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -64,6 +74,20 @@ func CreateShop(c *gin.Context) {
 	config.DB.Create(&shop)
 
 	c.JSON(http.StatusOK, gin.H{"data": shop})
+}
+
+// POST Request
+// Add dorayaki to shop
+func AddDorayaki(c *gin.Context) {
+	var input AddDorayakiInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": true})
 }
 
 // PATCH Request
