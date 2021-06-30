@@ -81,8 +81,8 @@ func CreateShop(c *gin.Context) {
 
 // POST Request
 // Add dorayaki to shop
-func AddDorayaki(c *gin.Context) {
-	var input dto.AddDorayakiInput
+func AddInventory(c *gin.Context) {
+	var input dto.AddInventoryInput
 
 	err := c.ShouldBindJSON(&input)
 
@@ -101,6 +101,97 @@ func AddDorayaki(c *gin.Context) {
 	config.DB.Create(&shop_dorayaki)
 
 	res := helper.BuildResponse(true, "OK", shop_dorayaki)
+
+	c.JSON(http.StatusOK, res)
+}
+
+// PATCH Request
+// Update a shop inventory
+func UpdateInventory(c *gin.Context) {
+	var input dto.UpdateInventoryInput
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		res := helper.BuildErrorResponse("Not JSON binded", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	var shop_dorayaki models.ShopDorayaki
+
+	err := config.DB.Where("dorayaki_id = ? AND shop_id = ?", input.DorayakiID, input.ShopID).Find(&shop_dorayaki).Error
+
+	if err != nil {
+		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	if input.Quantity >= 0 {
+		err := config.DB.Model(&shop_dorayaki).Where("dorayaki_id = ? AND shop_id = ?", input.DorayakiID, input.ShopID).Update("quantity", input.Quantity).Error
+
+		if err != nil {
+			res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
+			c.JSON(http.StatusBadRequest, res)
+			return
+		}
+
+		res := helper.BuildResponse(true, "OK", shop_dorayaki)
+		c.JSON(http.StatusOK, res)
+
+	} else {
+		res := helper.BuildErrorResponse("Quantity should be >= 0", "", helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+}
+
+// PATCH Request
+// Move inventory from one shop to another
+func MoveInventory(c *gin.Context) {
+	var input dto.MoveInventoryInput
+
+	// If request not binded
+	if err := c.ShouldBindJSON(&input); err != nil {
+		res := helper.BuildErrorResponse("Not JSON binded", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	var donator models.ShopDorayaki
+	var recipient models.ShopDorayaki
+
+	errDonator := config.DB.Where("dorayaki_id = ? AND shop_id = ?", input.DorayakiID, c.Param("id")).First(&donator).Error
+
+	// If donator not found
+	if errDonator != nil {
+		res := helper.BuildErrorResponse("Record not found", errDonator.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	// If donated quantity > than available stock
+	if input.Quantity > donator.Quantity {
+		res := helper.BuildErrorResponse("Not enough dorayaki", "", helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	errRecipient := config.DB.Where("dorayaki_id = ? AND shop_id = ?", input.DorayakiID, input.RecipientID).First(&recipient).Error
+
+	if errRecipient != nil {
+		recipient := models.ShopDorayaki{
+			DorayakiID: input.DorayakiID,
+			ShopID:     input.RecipientID,
+			Quantity:   input.Quantity,
+		}
+		config.DB.Create(&recipient)
+	} else {
+		config.DB.Model(&recipient).Update("quantity", recipient.Quantity+input.Quantity)
+	}
+
+	config.DB.Model(&donator).Update("quantity", donator.Quantity-input.Quantity)
+
+	res := helper.BuildResponse(true, "OK", donator)
 
 	c.JSON(http.StatusOK, res)
 }

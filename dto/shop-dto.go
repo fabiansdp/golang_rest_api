@@ -16,12 +16,6 @@ type UpdateShopInput struct {
 	Provinsi  string `json:"provinsi"`
 }
 
-type AddDorayakiInput struct {
-	DorayakiID uint `json:"dorayaki_id" binding:"required"`
-	ShopID     uint `json:"shop_id" binding:"required"`
-	Quantity   int  `json:"quantity" binding:"required"`
-}
-
 type Inventory struct {
 	models.Dorayaki
 	Quantity int `json:"quantity"`
@@ -30,4 +24,20 @@ type Inventory struct {
 type GetShopOutput struct {
 	ShopInfo  models.Shop `json:"shop_info"`
 	Inventory []Inventory `json:"inventory"`
+}
+
+type AddInventoryInput struct {
+	DorayakiID uint `json:"dorayaki_id" binding:"required"`
+	ShopID     uint `json:"shop_id" binding:"required"`
+	Quantity   int  `json:"quantity" binding:"required"`
+}
+
+type UpdateInventoryInput struct {
+	AddInventoryInput
+}
+
+type MoveInventoryInput struct {
+	DorayakiID  uint `json:"dorayaki_id" binding:"required"`
+	RecipientID uint `json:"recipient_id" binding:"required"`
+	Quantity    int  `json:"quantity" binding:"required"`
 }

@@ -1,12 +1,23 @@
 package main
 
 import (
+	"os"
+
 	"github.com/fabiansdp/golang_rest_api/config"
 	"github.com/fabiansdp/golang_rest_api/controllers"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	errEnv := godotenv.Load()
+
+	if errEnv != nil {
+		panic("Failed to load environment variables")
+	}
+
+	PORT := os.Getenv("PORT")
+
 	router := gin.Default()
 
 	config.ConnectDatabase()
@@ -31,10 +42,12 @@ func main() {
 		shopRoutes.GET("/", controllers.GetShops)
 		shopRoutes.GET("/:id", controllers.GetShop)
 		shopRoutes.POST("/", controllers.CreateShop)
-		shopRoutes.POST("/inventory", controllers.AddDorayaki)
+		shopRoutes.POST("/inventory", controllers.AddInventory)
+		shopRoutes.PATCH("/inventory", controllers.UpdateInventory)
+		shopRoutes.PATCH("/inventory/:id", controllers.MoveInventory)
 		shopRoutes.PATCH("/:id", controllers.UpdateShop)
 		shopRoutes.DELETE("/:id", controllers.DeleteShop)
 	}
 
-	router.Run(":8080")
+	router.Run(":" + PORT)
 }
