@@ -26,10 +26,11 @@ func GetShops(c *gin.Context) {
 // Find a single shop and its inventory
 func GetShop(c *gin.Context) {
 	var shop models.Shop
+	var dorayakis []models.Dorayaki
 	var inventory []dto.Inventory
 	var output dto.GetShopOutput
 
-	err := config.DB.First(&shop, c.Param("id")).Error
+	err := config.DB.Find(&shop, c.Param("id")).Error
 
 	if err != nil {
 		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
@@ -37,13 +38,15 @@ func GetShop(c *gin.Context) {
 		return
 	}
 
-	// Join Operation
-	config.DB.Table("dorayakis").Select(
-		"dorayakis.id",
-		"dorayakis.rasa",
-		"dorayakis.deskripsi",
-		"dorayakis.gambar",
-		"shop_dorayakis.quantity").Joins("JOIN shop_dorayakis ON dorayakis.id = shop_dorayakis.dorayaki_id").Where("shop_dorayakis.shop_id = ?", c.Param("id")).Scan(&inventory)
+	// Find associated dorayakis and get quantity
+	config.DB.Model(&shop).Association("Dorayakis").Find(&dorayakis)
+	config.DB.Model(&dorayakis).
+		Select(
+			"dorayakis.*",
+			"shop_dorayakis.quantity",
+		).
+		Joins("JOIN shop_dorayakis ON dorayakis.id = shop_dorayakis.dorayaki_id").
+		Scan(&inventory)
 
 	output.ShopInfo = shop
 	output.Inventory = inventory
