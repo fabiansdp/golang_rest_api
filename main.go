@@ -5,6 +5,7 @@ import (
 
 	"github.com/fabiansdp/golang_rest_api/config"
 	"github.com/fabiansdp/golang_rest_api/controllers"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -19,6 +20,7 @@ func main() {
 	PORT := os.Getenv("PORT")
 
 	router := gin.Default()
+	router.Use(cors.Default())
 
 	config.ConnectDatabase()
 
