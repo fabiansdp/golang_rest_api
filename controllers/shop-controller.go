@@ -239,7 +239,7 @@ func DeleteShop(c *gin.Context) {
 		return
 	}
 
-	config.DB.Delete(&shop)
+	config.DB.Select("Dorayakis").Delete(&shop)
 
 	res := helper.BuildResponse(true, "Deleted", helper.EmptyObj{})
 	c.JSON(http.StatusOK, res)
