@@ -86,11 +86,25 @@ func CreateShop(c *gin.Context) {
 // Add dorayaki to shop
 func AddInventory(c *gin.Context) {
 	var input dto.AddInventoryInput
+	var shop models.Shop
+	var dorayaki models.Dorayaki
 
 	err := c.ShouldBindJSON(&input)
 
 	if err != nil {
-		res := helper.BuildErrorResponse("Create shop failed", err.Error(), helper.EmptyObj{})
+		res := helper.BuildErrorResponse("Add inventory failed", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	if err := config.DB.First(&shop, input.ShopID).Error; err != nil {
+		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	if err := config.DB.First(&dorayaki, input.DorayakiID).Error; err != nil {
+		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, res)
 		return
 	}
@@ -130,10 +144,10 @@ func UpdateInventory(c *gin.Context) {
 	}
 
 	if input.Quantity >= 0 {
-		err := config.DB.Model(&shop_dorayaki).Where("dorayaki_id = ? AND shop_id = ?", input.DorayakiID, input.ShopID).Update("quantity", input.Quantity).Error
+		err := config.DB.Model(&shop_dorayaki).Update("quantity", input.Quantity).Error
 
 		if err != nil {
-			res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
+			res := helper.BuildErrorResponse("Error in updating inventory", err.Error(), helper.EmptyObj{})
 			c.JSON(http.StatusBadRequest, res)
 			return
 		}
