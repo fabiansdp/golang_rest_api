@@ -30,7 +30,7 @@ func GetShop(c *gin.Context) {
 	var inventory []dto.Inventory
 	var output dto.GetShopOutput
 
-	err := config.DB.Find(&shop, c.Param("id")).Error
+	err := config.DB.First(&shop, c.Param("id")).Error
 
 	if err != nil {
 		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
@@ -121,7 +121,7 @@ func UpdateInventory(c *gin.Context) {
 
 	var shop_dorayaki models.ShopDorayaki
 
-	err := config.DB.Where("dorayaki_id = ? AND shop_id = ?", input.DorayakiID, input.ShopID).Find(&shop_dorayaki).Error
+	err := config.DB.Where("dorayaki_id = ? AND shop_id = ?", input.DorayakiID, input.ShopID).First(&shop_dorayaki).Error
 
 	if err != nil {
 		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
