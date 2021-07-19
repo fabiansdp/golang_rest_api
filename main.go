@@ -45,7 +45,7 @@ func main() {
 		shopRoutes.GET("/:id", controllers.GetShop)
 		shopRoutes.POST("/", controllers.CreateShop)
 		shopRoutes.POST("/inventory", controllers.AddInventory)
-		shopRoutes.PATCH("/inventory", controllers.UpdateInventory)
+		shopRoutes.PUT("/inventory/:id", controllers.UpdateInventory)
 		shopRoutes.PATCH("/inventory/:id", controllers.MoveInventory)
 		shopRoutes.PATCH("/:id", controllers.UpdateShop)
 		shopRoutes.DELETE("/:id", controllers.DeleteShop)

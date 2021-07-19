@@ -135,7 +135,7 @@ func UpdateInventory(c *gin.Context) {
 
 	var shop_dorayaki models.ShopDorayaki
 
-	err := config.DB.Where("dorayaki_id = ? AND shop_id = ?", input.DorayakiID, input.ShopID).First(&shop_dorayaki).Error
+	err := config.DB.Where("dorayaki_id = ? AND shop_id = ?", c.Param("id"), input.ShopID).First(&shop_dorayaki).Error
 
 	if err != nil {
 		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
