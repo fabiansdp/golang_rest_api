@@ -33,8 +33,8 @@ type AddInventoryInput struct {
 }
 
 type UpdateInventoryInput struct {
-	ShopID   uint `json:"shop_id" binding:"required"`
-	Quantity int  `json:"quantity" binding:"required"`
+	DorayakiID uint `json:"dorayaki_id" binding:"required"`
+	Quantity   int  `json:"quantity" binding:"required"`
 }
 
 type MoveInventoryInput struct {
