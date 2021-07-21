@@ -46,6 +46,7 @@ func GetShop(c *gin.Context) {
 			"shop_dorayakis.quantity",
 		).
 		Joins("JOIN shop_dorayakis ON dorayakis.id = shop_dorayakis.dorayaki_id").
+		Where("shop_dorayakis.shop_id = ?", shop.ID).
 		Scan(&inventory)
 
 	output.ShopInfo = shop
