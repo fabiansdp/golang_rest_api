@@ -89,6 +89,7 @@ func AddInventory(c *gin.Context) {
 	var input dto.AddInventoryInput
 	var shop models.Shop
 	var dorayaki models.Dorayaki
+	var shopDorayaki models.ShopDorayaki
 
 	err := c.ShouldBindJSON(&input)
 
@@ -106,6 +107,12 @@ func AddInventory(c *gin.Context) {
 
 	if err := config.DB.First(&dorayaki, input.DorayakiID).Error; err != nil {
 		res := helper.BuildErrorResponse("Record not found", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	if err := config.DB.Where("dorayaki_id = ? AND shop_id = ?", input.DorayakiID, input.ShopID).First(&shopDorayaki).Error; err == nil {
+		res := helper.BuildResponse(false, "Duplicate Record", helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, res)
 		return
 	}
