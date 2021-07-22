@@ -44,12 +44,13 @@ func main() {
 		shopRoutes.GET("/", controllers.GetShops)
 		shopRoutes.GET("/:id", controllers.GetShop)
 		shopRoutes.POST("/", controllers.CreateShop)
-		shopRoutes.POST("/inventory", controllers.AddInventory)
 		shopRoutes.PUT("/inventory/:id", controllers.UpdateInventory)
 		shopRoutes.PATCH("/inventory/:id", controllers.MoveInventory)
 		shopRoutes.PATCH("/:id", controllers.UpdateShop)
 		shopRoutes.DELETE("/:id", controllers.DeleteShop)
 	}
+
+	router.POST("api/inventory", controllers.AddInventory)
 
 	router.Run(":" + PORT)
 }
