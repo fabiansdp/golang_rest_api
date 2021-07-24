@@ -44,13 +44,17 @@ func main() {
 		shopRoutes.GET("/", controllers.GetShops)
 		shopRoutes.GET("/:id", controllers.GetShop)
 		shopRoutes.POST("/", controllers.CreateShop)
-		shopRoutes.PUT("/inventory/:id", controllers.UpdateInventory)
-		shopRoutes.PATCH("/inventory/:id", controllers.MoveInventory)
 		shopRoutes.PATCH("/:id", controllers.UpdateShop)
 		shopRoutes.DELETE("/:id", controllers.DeleteShop)
 	}
 
+	// Shop Inventory Routes
+	// Jujur ini ga di-group karena error cors kalau di-group tapi
+	// berjalan biasa kalau sendirian
 	router.POST("api/inventory", controllers.AddInventory)
+	router.PUT("api/inventory/:id", controllers.UpdateInventory)
+	router.PATCH("api/inventory/:id", controllers.MoveInventory)
+	router.DELETE("api/inventory/:id", controllers.DeleteInventory)
 
 	router.Run(":" + PORT)
 }

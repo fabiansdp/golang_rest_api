@@ -266,3 +266,28 @@ func DeleteShop(c *gin.Context) {
 	res := helper.BuildResponse(true, "Deleted", helper.EmptyObj{})
 	c.JSON(http.StatusOK, res)
 }
+
+func DeleteInventory(c *gin.Context) {
+	var dorayaki_id uint
+	var shop_dorayaki models.ShopDorayaki
+
+	if err := c.ShouldBindJSON(&dorayaki_id); err != nil {
+		res := helper.BuildErrorResponse("Not JSON binded", err.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	errInventory := config.DB.Where("dorayaki_id = ? AND shop_id = ?", dorayaki_id, c.Param("id")).First(&shop_dorayaki).Error
+
+	// If donator not found
+	if errInventory != nil {
+		res := helper.BuildErrorResponse("Record not found", errInventory.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	config.DB.Delete(&shop_dorayaki)
+
+	res := helper.BuildResponse(true, "Deleted", helper.EmptyObj{})
+	c.JSON(http.StatusOK, res)
+}
