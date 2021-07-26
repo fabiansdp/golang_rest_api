@@ -2,12 +2,14 @@ package controllers
 
 import (
 	"net/http"
+	"path/filepath"
 
 	"github.com/fabiansdp/golang_rest_api/config"
 	"github.com/fabiansdp/golang_rest_api/dto"
 	"github.com/fabiansdp/golang_rest_api/helper"
 	"github.com/fabiansdp/golang_rest_api/models"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // GET Request
@@ -41,15 +43,30 @@ func GetDorayaki(c *gin.Context) {
 // POST Request
 // Create New Dorayaki
 func CreateDorayaki(c *gin.Context) {
-	var input dto.CreateDorayakiInput
+	rasa := c.PostForm("rasa")
+	deskripsi := c.PostForm("deskripsi")
+	file, errFile := c.FormFile("file")
 
-	if err := c.ShouldBindJSON(&input); err != nil {
-		res := helper.BuildErrorResponse("Create dorayaki failed", err.Error(), helper.EmptyObj{})
+	if errFile != nil {
+		res := helper.BuildErrorResponse("File not found", errFile.Error(), helper.EmptyObj{})
 		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	dorayaki := models.Dorayaki{Rasa: input.Rasa, Deskripsi: input.Deskripsi, Gambar: input.Gambar}
+	// Retrieve file information
+	extension := filepath.Ext(file.Filename)
+	// Generate random file name for the new uploaded file so it doesn't override the old file with same name
+	newFileName := uuid.New().String() + extension
+	// Path to images folder
+	path := "images/" + newFileName
+
+	if err := c.SaveUploadedFile(file, path); err != nil {
+		res := helper.BuildErrorResponse("Unable to save file", errFile.Error(), helper.EmptyObj{})
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	dorayaki := models.Dorayaki{Rasa: rasa, Deskripsi: deskripsi, Gambar: newFileName}
 
 	config.DB.Create(&dorayaki)
 

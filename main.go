@@ -17,6 +17,14 @@ func main() {
 		panic("Failed to load environment variables")
 	}
 
+	imagePath := "./images"
+	if _, err := os.Stat(imagePath); os.IsNotExist(err) {
+		err := os.Mkdir(imagePath, os.ModePerm)
+		if err != nil {
+			panic("Falied to create images folder")
+		}
+	}
+
 	PORT := os.Getenv("PORT")
 
 	router := gin.Default()
