@@ -59,6 +59,7 @@ func main() {
 	// Shop Inventory Routes
 	// Jujur ini ga di-group karena error cors kalau di-group tapi
 	// berjalan biasa kalau sendirian
+	router.GET("/api/file/:filename", controllers.GetDorayakiImg)
 	router.POST("api/inventory", controllers.AddInventory)
 	router.PUT("api/inventory/:id", controllers.UpdateInventory)
 	router.PATCH("api/inventory/:id", controllers.MoveInventory)
