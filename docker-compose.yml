@@ -27,11 +27,5 @@ services:
     links:
       - "db:database"
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - "9000:9000"
-
 volumes:
   mysql-data:
