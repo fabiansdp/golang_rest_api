@@ -7,25 +7,17 @@ import (
 	"github.com/fabiansdp/golang_rest_api/controllers"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	errEnv := godotenv.Load()
-
-	if errEnv != nil {
-		panic("Failed to load environment variables")
-	}
-
 	imagePath := "./images"
+
 	if _, err := os.Stat(imagePath); os.IsNotExist(err) {
 		err := os.Mkdir(imagePath, os.ModePerm)
 		if err != nil {
 			panic("Falied to create images folder")
 		}
 	}
-
-	PORT := os.Getenv("PORT")
 
 	router := gin.Default()
 	router.Use(cors.Default())
@@ -65,5 +57,5 @@ func main() {
 	router.PATCH("api/inventory/:id", controllers.MoveInventory)
 	router.DELETE("api/inventory/:id", controllers.DeleteInventory)
 
-	router.Run(":" + PORT)
+	router.Run(":8080")
 }
