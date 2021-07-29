@@ -4,6 +4,7 @@
 ## Daftar Isi
 * [Kontributor](#kontributor)
 * [Penjelasan](#penjelasan)
+* [Instalasi](#instalasi)
 * [Routes](#routes)
 
 ## Kontributor
@@ -12,6 +13,19 @@ Fabian Savero Diaz Pranoto (13519140)
 ## Penjelasan
 Sebuah REST API sebagai tugas seleksi Asisten Lab Programming. Digunakan untuk menghandle request sebuah toko dorayaki.
 
+## Instalasi
+Clone repository ini lalu jalankan docker compose:
+```cmd
+docker-compose up --build
+```
+Untuk .env file memiliki struktur sebagai berikut:
+```
+MYSQL_ROOT_PASSWORD=
+MYSQL_USER=
+MYSQL_PASSWORD=
+MYSQL_DATABASE=
+MYSQL_HOST=
+```
 ## Routes
 ### Dorayaki Routes
 1. Get Dorayaki List (GET /api/dorayakis)
