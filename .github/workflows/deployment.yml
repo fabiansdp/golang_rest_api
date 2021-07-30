@@ -28,4 +28,7 @@ jobs:
           port: 22
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
-          script: "docker-compose pull && docker-compose build && docker-compose up -d --remove-orphans"
+          script:  |
+            sudo docker-compose pull
+            sudo docker-compose build
+            sudo docker-compose up -d --remove-orphans
