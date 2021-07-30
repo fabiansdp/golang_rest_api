@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/fabiansdp/golang_rest_api/models"
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -13,12 +12,6 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	errEnv := godotenv.Load()
-
-	if errEnv != nil {
-		panic("Failed to load environment variables")
-	}
-
 	dbUser := os.Getenv("MYSQL_USER")
 	dbRootPass := os.Getenv("MYSQL_ROOT_PASSWORD")
 	dbHost := os.Getenv("MYSQL_HOST")
