@@ -149,13 +149,7 @@ func DeleteDorayaki(c *gin.Context) {
 	}
 
 	// Remove file
-	err := os.Remove("images/" + dorayaki.Gambar)
-
-	if err != nil {
-		res := helper.BuildErrorResponse("Cannot delete file", err.Error(), helper.EmptyObj{})
-		c.JSON(http.StatusBadRequest, res)
-		return
-	}
+	os.Remove("images/" + dorayaki.Gambar)
 
 	config.DB.Where("dorayaki_id = ?", c.Param("id")).Delete(&shop_dorayaki)
 	config.DB.Delete(&dorayaki)
