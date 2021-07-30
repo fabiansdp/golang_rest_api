@@ -1,0 +1,31 @@
+name: Latest
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish Latest to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: fabiansdp/golang_rest_api/golang_backend
+          username: ${{ secrets.PKG_REGISTRY_USERNAME }}
+          password: ${{ secrets.PKG_REGISTRY_PASSWORD }}
+          registry: docker.pkg.github.com
+          tags: "latest"
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Run deployment script over SSH
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.HOST }}
+          port: 22
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: "docker-compose pull && docker-compose build && docker-compose up -d --remove-orphans"
