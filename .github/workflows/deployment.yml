@@ -2,15 +2,21 @@ name: Latest
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@master
       - name: Publish Latest to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+          MYSQL_USER: ${{ env.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
+          MYSQL_HOST: ${{ env.MYSQL_HOST }}
         with:
           name: fabiansdp/golang_rest_api/golang_backend
           username: ${{ secrets.PKG_REGISTRY_USERNAME }}
