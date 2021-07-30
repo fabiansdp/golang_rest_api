@@ -23,8 +23,6 @@ jobs:
     steps:
       - name: Run deployment script over SSH
         uses: appleboy/ssh-action@v0.1.3
-        env:
-          PASSWORD: ${{ secrets.PKG_REGISTRY_PASSWORD }}
         with:
           host: ${{ secrets.HOST }}
           port: 22
