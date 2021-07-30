@@ -32,7 +32,4 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           script:  |
             export CR_PAT="%CR_PAT%"
-            echo $CR_PAT | docker login ghcr.io -u fabiansdp --password-stdin
-            sudo docker-compose pull
-            sudo docker-compose build
-            sudo docker-compose up -d --remove-orphans
+            echo $CR_PAT
